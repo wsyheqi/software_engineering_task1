@@ -1,6 +1,7 @@
 一、访谈与补充沟通
 
 项目名称：学校来宾酒店预订系统
+仓库地址（用户后续提供）：https://github.com/wsyheqi/software_engineering_task1
 甲方：[实际姓名待填写]
 需求分析工程师：[本人姓名、学号待填写]
 正式访谈实际时间：[待补录；原始答复文件没有提供，不以文件修改时间代替]
@@ -778,6 +779,22 @@ AI后续完整输出：报告工作草稿
 5. 两个标签固定后核对本报告，补齐公开仓库和完整提交编号，导出最终 `report.pdf`。
 6. 提交 `实验1_学号_姓名.zip`，内部作业文件只含 `report.pdf`、`requirements.md`、`chat.txt`。两个文本须与 `lab1-final` 中同名文件完全一致；本报告草稿、原始资料和补充清单留作工作材料，不混入最终压缩包。
 ===== REPORT WORKING DRAFT END =====
+
+AI后续交互：补充仓库信息
+
+用户实际提示词：
+仓库地址是[https://github.com/wsyheqi/software_engineering_task1](https://github.com/wsyheqi/software_engineering_task1) ，请你补充有关文件
+
+AI本轮完整修改记录：
+1. requirements.md的版本行更新为“版本：V0.1.1，补充仓库信息的工作稿。”，仓库地址更新为“https://github.com/wsyheqi/software_engineering_task1”。
+2. report_草稿.md的版本行更新为“版本：V0.1.1，已补充仓库信息，尚未固定最终版本。”；版本信息表中的个人公开仓库地址更新为上述URL，新增“远程关联：origin 已指向上述仓库”。
+3. 报告的待完成事项第4项更新为“将后续提交同步至上述仓库，确保仓库公开可访问，分支与初稿标签均已上传。完成最终需求和记录后提交并创建 lab1-final，两个标签均不移动、删除或覆盖。”
+4. 报告的待完成事项第5项更新为“两个标签固定后核对本报告的仓库地址，补齐 lab1-final 完整提交编号，导出最终 report.pdf。”
+5. chat.txt顶部增加“仓库地址（用户后续提供）：https://github.com/wsyheqi/software_engineering_task1”；本轮交互追加在AI交互部分，不改写首次需求输出和原报告输出中当时的占位内容。
+6. 已读取本地Git配置，origin原本即为https://github.com/wsyheqi/software_engineering_task1.git，无需重新关联。本轮只补充本地文件，未执行远程推送。
+7. 26条需求的业务内容及状态未修改；lab1-ai-draft仍指向ff48706750fed64c9451d829123223fd22aac483，未移动、删除或覆盖，未创建lab1-final。
+
+说明：前面历史输出中的“仓库地址待填写”“尚未提供，尚未发布”为当时原始记录；当前仓库信息以上述用户后续提供的地址为准。补充沟通、本人审查及最终提交编号仍待完成。
 
 三、人工审查记录
 
