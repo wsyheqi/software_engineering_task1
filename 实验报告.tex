@@ -1,0 +1,554 @@
+% !TeX program = xelatex
+% !TeX encoding = UTF-8
+% 从项目根目录编译；正文、表格与图注均可直接编辑。
+\documentclass[UTF8,fontset=windows,zihao=-4]{ctexart}
+\usepackage[a4paper,left=17mm,right=17mm,top=15mm,bottom=15mm,includeheadfoot,headheight=16pt,headsep=5mm,footskip=8mm]{geometry}
+\usepackage{graphicx,booktabs,array,tabularx,xcolor,fancyhdr}
+\usepackage[unicode,hidelinks]{hyperref}
+\setmainfont{Times New Roman}
+\definecolor{ReportInk}{HTML}{173447}
+\definecolor{ReportMuted}{HTML}{657A89}
+\definecolor{ReportLine}{HTML}{BECBD3}
+\hypersetup{pdftitle={软件工程实验二报告},pdfauthor={张博睿 241220007},pdfsubject={学校来宾酒店预订系统整体设计与界面设计},bookmarksnumbered=true}
+\ctexset{section={name={,、},number=\chinese{section},format=\fontsize{14}{20}\selectfont\sffamily\bfseries\color{ReportInk},beforeskip=0pt,afterskip=3mm},subsection={format=\fontsize{12}{17}\selectfont\sffamily\bfseries\color{ReportInk},beforeskip=2mm,afterskip=2mm}}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{2.2pt}
+\setlength{\emergencystretch}{2em}
+\linespread{1.22}
+\renewcommand{\arraystretch}{1.14}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\fontsize{8}{10}\selectfont\color{ReportMuted}软件工程实验二 · 来宾酒店预订系统}
+\fancyhead[R]{\fontsize{8}{10}\selectfont\color{ReportMuted}\ReportRunning}
+\fancyfoot[L]{\fontsize{8}{10}\selectfont\color{ReportMuted}张博睿 · 241220007}
+\fancyfoot[R]{\fontsize{8}{10}\selectfont\color{ReportMuted}第\thepage 页 / 共\pageref{report:last}页}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0.2pt}
+\newcommand{\ReportRunning}{}
+\newcommand{\ReportHeader}[1]{\renewcommand{\ReportRunning}{#1}}
+% 全文固定A4纵向；分页只换页，不改变纸张尺寸。
+\newcommand{\ReportPage}{\clearpage}
+\newcommand{\SmallHeading}[1]{\par\vspace{2.3mm}{\sffamily\bfseries\color{ReportInk}#1}\par\vspace{1mm}}
+\begin{document}
+\pagenumbering{arabic}
+\thispagestyle{empty}
+\vspace*{16mm}
+\begin{center}
+{\sffamily\bfseries\color{ReportInk}\fontsize{22}{30}\selectfont 软件工程实验二报告\par}
+\end{center}
+\vspace{12mm}
+\begin{center}
+\begin{tabular}{@{}p{27mm}p{105mm}@{}}
+姓名 & 张博睿 \\
+学号 & 241220007 \\
+课程 & 软件工程 \\
+报告日期 & 2026年11月1日 \\
+\end{tabular}
+\end{center}
+\vspace{13mm}
+\SmallHeading{目录}
+\noindent\begin{tabularx}{\linewidth}{@{}p{15mm}Yp{23mm}@{}}
+\toprule
+部分 & 内容 & 起始页 \\
+\midrule
+一 & 主要功能 & \pageref{part:main} \\
+二 & UML图 & \pageref{part:uml} \\
+三 & UI界面 & \pageref{part:ui} \\
+四 & 大模型使用 & \pageref{part:llm} \\
+\bottomrule
+\end{tabularx}
+
+\ReportPage
+\ReportHeader{主要功能}
+\section{主要功能}\label{part:main}
+系统用于本校来宾接待，支持酒店查询、代订、住宿登记和异常安置。接待人员负责需求与订单，酒店人员负责本店房源与履约，平台管理员负责校方资料和规则；来宾仅查看本人安排。学校管理员与平台管理员为同一角色。
+
+\SmallHeading{功能模块}
+{\fontsize{10.3}{13.6}\selectfont\setlength{\tabcolsep}{4pt}
+\noindent\begin{tabularx}{\linewidth}{@{}>{\bfseries}p{29mm}Y@{}}
+\toprule
+\textbf{模块} & \textbf{主要功能} \\
+\midrule
+身份与权限 & 四类用户登录，按角色、接待责任和酒店归属控制资料与操作范围。 \\
+酒店与校方资料 & 维护酒店、接待地点、核实距离、学校审核评价及约定费用规则。 \\
+房源管理 & 逐日维护房型价格、学校名额、确认占用、维修扣减和停售。 \\
+查询与推荐 & 按日期、人数、房型、价格和距离筛选，结合价格、距离及评价排序。 \\
+订单管理 & 录入需求、整单预订、查询结果、状态跟踪、改订和整单取消。 \\
+入住与退房 & 逐人入住与补登记，办理续住、正常及提前退房、晚到与未入住。 \\
+异常安置 & 酒店停业时保留原单和占用，确认替代新单后关闭原单并关联。 \\
+通知与待处理 & 记录停业双渠道通知、未到店核实和未入住结果，跟进失败与确认待办。 \\
+统计报表 & 按下单、计划住宿或实际住宿日期汇总人次、间夜及分类费用。 \\
+操作日志 & 按权限追溯操作者、时间、对象和结果，记录异常处理及越权尝试。 \\
+\bottomrule
+\end{tabularx}\par
+}
+\SmallHeading{流程与规则}
+业务依次完成需求录入、酒店筛选、方案确认、入住调整和退房统计。同酒店、同住宿日期可多房型合单；候选须已审核、学校评价至少70分、全部住宿晚有房，并符合预算和距离。
+
+预订逐晚复核并锁定价格与规则。方案变化须重新确认，房源不足整单失败，同一请求不重复下单。改订失败保留原单；入住前一日18:00整起，特殊改订须管理员与酒店均确认。
+
+取消、未入住及提前退房额外费用独立记录、线下结算。晚到先核实，未入住由酒店登记；停业替代成功后才关闭释放原单，并保留已住事实与费用。
+
+
+\ReportPage
+\ReportHeader{UML图}
+\section{UML图}\label{part:uml}
+\SmallHeading{设计概览}
+本设计使用PlantUML默认格式绘制五种、六张UML图，覆盖结构、行为和交互三类。以下按“模块与数据—角色与状态—关键业务交互”组织，分别说明系统如何划分、由谁操作以及如何保证处理顺序。
+
+{\small
+\noindent\begin{tabularx}{\linewidth}{@{}p{18mm}p{45mm}Y@{}}
+\toprule
+\textbf{分类} & \textbf{图形} & \textbf{主要表达内容} \\
+\midrule
+结构 & 组件图、类图 & 明确模块依赖、领域对象及数据关联。 \\
+行为 & 用例图、状态图 & 界定四类用户的权限、业务目标及九种订单状态。 \\
+交互 & 自动预订、停业安置序列图 & 描述方案复核、重复请求与新旧订单的一致处理。 \\
+\bottomrule
+\end{tabularx}\par
+}
+图形与UI遵循同一规则：普通预订自动确认；特殊改订须双方批准当前方案，再由接待人员确认差额；停业仅在替代新单成功后关闭释放原单。通知失败不撤销已提交业务。
+
+
+% UML组1
+\ReportPage
+\phantomsection\pdfbookmark[1]{2.1 组件图}{uml-group-1}
+\subsection*{2.1 组件图}
+系统分为十个逻辑模块。查询与订单依赖酒店、房源数据，入住与安置处理住宿变化；权限、通知、统计和日志为业务提供支撑。订单、名额和请求结果保持一致，通知失败进入待处理。
+
+\begin{center}
+\centering
+\includegraphics[page=1,width=\linewidth,height=180mm,keepaspectratio]{uml/uml-figures.pdf}
+\par\smallskip
+{\fontsize{8.5}{11}\selectfont\color{ReportMuted}图2-1 组件图\par}
+\end{center}
+
+% UML组2
+\ReportPage
+\phantomsection\pdfbookmark[1]{2.2 类图}{uml-group-2}
+\subsection*{2.2 类图}
+数据分为用户与需求、酒店与房源、订单与履约三组。订单包含房型及逐晚明细，并保存锁定价格和规则快照；入住记录按人登记，间夜按房间及日期统计。停业记录关联原单与替代新单，特殊改订记录绑定具体方案。
+
+\begin{center}
+\centering
+\includegraphics[page=2,width=\linewidth,height=185mm,keepaspectratio]{uml/uml-figures.pdf}
+\par\smallskip
+{\fontsize{8.5}{11}\selectfont\color{ReportMuted}图2-2 类图\par}
+\end{center}
+
+% UML组3
+\ReportPage
+\phantomsection\pdfbookmark[1]{2.3 用例图}{uml-group-3}
+\subsection*{2.3 用例图}
+来宾查看本人安排，接待人员代订并处理负责订单，酒店管理本店房源和履约，管理员维护校方资料与规则。普通预订自动确认；特殊改订须管理员、酒店分别确认，再由接待人员确认方案和差额。
+
+\begin{center}
+\centering
+\includegraphics[page=3,width=\linewidth,height=200mm,keepaspectratio]{uml/uml-figures.pdf}
+\par\smallskip
+{\fontsize{8.5}{11}\selectfont\color{ReportMuted}图2-3 用例图\par}
+\end{center}
+
+% UML组4
+\ReportPage
+\phantomsection\pdfbookmark[1]{2.4 订单状态}{uml-group-4}
+\subsection*{2.4 订单状态}
+订单共九种状态。改订成功保持已确认，补登记和续住保持已入住；终态不能恢复入住。替代新单确认成功前，原单保持待安置并保留占用。待重新确认属于请求进度，不另设订单状态。
+
+\begin{center}
+\centering
+\includegraphics[page=4,width=\linewidth,height=195mm,keepaspectratio]{uml/uml-figures.pdf}
+\par\smallskip
+{\fontsize{8.5}{11}\selectfont\color{ReportMuted}图2-4 订单状态\par}
+\end{center}
+
+% UML组5
+\ReportPage
+\phantomsection\pdfbookmark[1]{2.5 自动预订}{uml-group-5}
+\subsection*{2.5 自动预订}
+先校验权限并查重，再复核酒店资格、规则、价格和逐晚名额。方案变化须重新确认，条件不满足则整单失败；成功时一致保存订单、占用和请求结果。响应不明确时查验原请求，避免重复预订。
+
+\begin{center}
+\centering
+\includegraphics[page=5,width=\linewidth,height=200mm,keepaspectratio]{uml/uml-figures.pdf}
+\par\smallskip
+{\fontsize{8.5}{11}\selectfont\color{ReportMuted}图2-5 自动预订\par}
+\end{center}
+
+% UML组6
+\ReportPage
+\phantomsection\pdfbookmark[1]{2.6 停业安置}{uml-group-6}
+\subsection*{2.6 停业安置}
+停业后停售受影响日期，原单转待安置并保留占用，记录实住与费用并通知接待人员。替代仅覆盖剩余日期，复核原条件、报价及逐晚名额，方案变化须重新确认；新单确认、旧单关闭、占用释放与关联一并完成。失败保留原单，通知失败转管理员待处理，停售不随占用释放解除。
+
+\begin{center}
+\centering
+\includegraphics[page=6,width=\linewidth,height=200mm,keepaspectratio]{uml/uml-figures.pdf}
+\par\smallskip
+{\fontsize{8.5}{11}\selectfont\color{ReportMuted}图2-6 停业安置\par}
+\end{center}
+
+\ReportPage
+\ReportHeader{UI界面}
+\section{UI界面}\label{part:ui}
+\SmallHeading{布局与导航}
+16个界面由draw.io Desktop 32.6.1设计并导出，采用1440×1000画板。左侧按角色组织导航，顶部显示身份与工作空间，主体围绕表单、清单和操作反馈展开。
+
+绿色表示可用或确认，琥珀色表示待核实和待安置，红色表示拒绝或失败，灰色表示完成。各状态同时保留文字，关键操作明确展示日期、费用、名额和处理结果。
+
+\SmallHeading{界面对照}
+{\small
+\noindent\begin{tabularx}{\linewidth}{@{}p{40mm}Y@{}}
+\toprule
+\textbf{模块 / 入口} & \textbf{界面} \\
+\midrule
+身份与权限 & 角色登录、账号与权限 \\
+酒店与校方资料 & 酒店与接待地点、审核与费用规则 \\
+房源管理 & 每日房源与价格 \\
+查询与推荐 & 酒店查询与推荐 \\
+订单管理 & 住宿需求、预订确认、改订取消 \\
+入住与退房 & 入住退房与续住、晚到与未入住 \\
+异常安置 & 停业替代安置 \\
+通知与待处理 & 通知与待处理 \\
+统计报表 & 接待住宿统计 \\
+操作日志 & 操作日志与审计 \\
+来宾查看入口 & 来宾本人住宿 \\
+\bottomrule
+\end{tabularx}\par
+}
+
+% UI界面1
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.1 角色登录}{ui-screen-1}
+\subsection*{3.1 角色登录}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI角色登录.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-1 角色登录\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}四类用户\qquad\textbf{模块：}身份与权限\par\smallskip
+\noindent\textbf{布局：}页面提供四类身份入口及账号、密码输入框，登录后进入对应工作空间。
+
+\noindent\textbf{操作：}选择角色，填写账号和密码后登录；来宾进入本人住宿页。
+
+\noindent\textbf{规则：}空值提示修正。角色选择不代表获得权限，正式系统仍须校验账号身份与责任范围。
+
+}
+
+% UI界面2
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.2 账号权限}{ui-screen-2}
+\subsection*{3.2 账号权限}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI账号与权限.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-2 账号权限\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}平台管理员\qquad\textbf{模块：}身份与权限\par\smallskip
+\noindent\textbf{布局：}左侧列出账号、角色和责任范围，右侧新增账号，下方汇总权限边界。
+
+\noindent\textbf{操作：}检索账号，选择角色并填写接待范围或所属酒店后保存。
+
+\noindent\textbf{规则：}酒店账号须绑定酒店，接待账号须明确负责范围；管理员默认查看脱敏资料。
+
+}
+
+% UI界面3
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.3 酒店资料}{ui-screen-3}
+\subsection*{3.3 酒店资料}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI酒店与接待地点.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-3 酒店资料\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}平台管理员\qquad\textbf{模块：}酒店与校方资料\par\smallskip
+\noindent\textbf{布局：}酒店清单与接待地点并列展示，距离按“酒店—指定接待地点”维护。
+
+\noindent\textbf{操作：}查询酒店，核实地址和距离，维护接待地点并进入质量审核。
+
+\noindent\textbf{规则：}校方资料由管理员维护；接待人员仅可选择地点。无审核或无评价酒店不能推荐和预订。
+
+}
+
+% UI界面4
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.4 审核与规则}{ui-screen-4}
+\subsection*{3.4 审核与规则}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI酒店审核与费用规则.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-4 审核与规则\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}平台管理员\qquad\textbf{模块：}酒店与校方资料\par\smallskip
+\noindent\textbf{布局：}分别呈现学校审核、0至100分评价，以及取消、提前退房的约定费用规则。
+
+\noindent\textbf{操作：}录入审核依据和评价，保存审核结果；查看或新建费用规则版本。
+
+\noindent\textbf{规则：}评价缺失或低于70分不能推荐及预订。确认订单保存规则快照，后续调整不追改原单。
+
+}
+
+% UI界面5
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.5 房源维护}{ui-screen-5}
+\subsection*{3.5 房源维护}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI每日房源与价格.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-5 房源维护\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}酒店工作人员\qquad\textbf{模块：}房源管理\par\smallskip
+\noindent\textbf{布局：}按房型和日期列出单价、学校名额、确认占用、维修扣减与可售余量。
+
+\noindent\textbf{操作：}调整逐日价格和名额，登记维修区间或停售，核对更新后的表格。
+
+\noindent\textbf{规则：}名额不能低于确认占用。维修按停用日至恢复日前一天扣减，影响原单时转待处理；释放占用不解除停售。
+
+}
+
+% UI界面6
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.6 住宿需求}{ui-screen-6}
+\subsection*{3.6 住宿需求}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI来宾住宿需求.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-6 住宿需求\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}学校接待人员\qquad\textbf{模块：}订单管理\par\smallskip
+\noindent\textbf{布局：}分别记录订房接待人员、实际入住人和住宿条件，支持同单多房型。
+
+\noindent\textbf{操作：}填写日期、预算、距离和特殊需求，添加入住人及房型后查询酒店。
+
+\noindent\textbf{规则：}预算、最大距离须大于0，距离默认20公里且可缩小。人数须与房型容量相符；不同酒店或日期拆单。
+
+}
+
+% UI界面7
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.7 酒店推荐}{ui-screen-7}
+\subsection*{3.7 酒店推荐}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI酒店查询与推荐.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-7 酒店推荐\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}学校接待人员\qquad\textbf{模块：}查询与推荐\par\smallskip
+\noindent\textbf{布局：}候选集中展示整单价、距离、学校评价及综合分，并保留原查询条件。
+
+\noindent\textbf{操作：}调整预算、距离、每晚价格区间或排序，查询后选择酒店进入确认页。
+
+\noindent\textbf{规则：}先满足审核、评价\ensuremath{\geq}70、预算、距离和逐晚有房，再评分；不自动放宽条件，显示舍入不影响真实排序。
+
+}
+
+% UI界面8
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.8 预订确认}{ui-screen-8}
+\subsection*{3.8 预订确认}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI预订确认.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-8 预订确认\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}学校接待人员\qquad\textbf{模块：}订单管理\par\smallskip
+\noindent\textbf{布局：}集中核对酒店、入住人、房型、逐晚价格、总额、取消规则及处理编号。
+
+\noindent\textbf{操作：}阅读费用规则并勾选确认，提交后查看订单或按原处理编号查询结果。
+
+\noindent\textbf{规则：}价格或名额变化但仍可订时重新确认；任一明细不足整单失败。重复请求返回原结果，不重复占用。
+
+}
+
+% UI界面9
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.9 订单管理}{ui-screen-9}
+\subsection*{3.9 订单管理}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI订单管理与改订取消.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-9 订单管理\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}学校接待人员\qquad\textbf{模块：}订单管理\par\smallskip
+\noindent\textbf{布局：}左侧按状态检索负责订单，右侧显示所选订单、取消期限和可用操作。
+
+\noindent\textbf{操作：}查看详情，确认改订方案与差额，或核对费用后整单取消。
+
+\noindent\textbf{规则：}18:00整起特殊改订须双方确认。失败保留原单，取消不重复释放，终态订单不能恢复入住。
+
+}
+
+% UI界面10
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.10 住宿登记}{ui-screen-10}
+\subsection*{3.10 住宿登记}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI入住退房与续住.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-10 住宿登记\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}酒店工作人员\qquad\textbf{模块：}入住与退房\par\smallskip
+\noindent\textbf{布局：}逐人显示实际到店及登记状态，右侧办理退房和续住等住宿调整。
+
+\noindent\textbf{操作：}首位到店转已入住，后来者补登记；酒店提出续住，接待人员确认新增日期与费用。
+
+\noindent\textbf{规则：}只登记实际到店人员。续住按申请时价格计新增晚，失败不影响原住宿；退房后不能恢复入住或续住。
+
+}
+
+% UI界面11
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.11 晚到处理}{ui-screen-11}
+\subsection*{3.11 晚到处理}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI晚到与未入住.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-11 晚到处理\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}酒店工作人员\qquad\textbf{模块：}入住与退房\par\smallskip
+\noindent\textbf{布局：}核实清单区分未到店与另行保留，显示默认时点、保留记录和人工登记入口。
+
+\noindent\textbf{操作：}联系核实并记录保留期限；超过次日12:00且无另行保留时，由酒店登记未入住。
+
+\noindent\textbf{规则：}入住日24:00仅提醒。登记后保留原单及应付费用、释放后续名额并通知接待人员；晚到须重新预订。
+
+}
+
+% UI界面12
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.12 停业安置}{ui-screen-12}
+\subsection*{3.12 停业安置}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI停业替代安置.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-12 停业安置\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}学校接待人员\qquad\textbf{模块：}异常安置\par\smallskip
+\noindent\textbf{布局：}分开展示原单已住部分和剩余住宿，列明剩余预算、候选酒店、报价与差额。
+
+\noindent\textbf{操作：}先选择酒店，再确认剩余日期、报价及差额；替代成功后关联新旧订单并关闭释放原单。
+
+\noindent\textbf{规则：}失败或未确认时保留原状态与占用。已住事实和费用不删除，原酒店受影响日期继续停售。
+
+}
+
+% UI界面13
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.13 通知处理}{ui-screen-13}
+\subsection*{3.13 通知处理}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI通知与待处理.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-13 通知处理\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}平台管理员\qquad\textbf{模块：}通知与待处理\par\smallskip
+\noindent\textbf{布局：}按业务对象和渠道列出通知结果，集中呈现发送失败与业务确认待办。
+
+\noindent\textbf{操作：}管理员跟进失败、特殊改订和费用争议；酒店确认本店改订，接待人员确认续住。
+
+\noindent\textbf{规则：}停业使用站内和学校邮箱。发送成功不等于已阅读，发送失败不撤销原业务；其他通知不擅自套用双渠道。
+
+}
+
+% UI界面14
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.14 住宿统计}{ui-screen-14}
+\subsection*{3.14 住宿统计}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI接待住宿统计.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-14 住宿统计\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}平台管理员\qquad\textbf{模块：}统计报表\par\smallskip
+\noindent\textbf{布局：}显式切换下单、计划住宿、实际住宿三种日期口径，按酒店和日期汇总。
+
+\noindent\textbf{操作：}选择口径与范围，核对人次、间夜及分类费用，再导出相同范围的结果。
+
+\noindent\textbf{规则：}样例计划6间夜、实际4、未来2；仅累计已住晚。取消、未入住及额外费用分列，停业新旧单分段统计。
+
+}
+
+% UI界面15
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.15 操作日志}{ui-screen-15}
+\subsection*{3.15 操作日志}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI操作日志与审计.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-15 操作日志\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}平台管理员\qquad\textbf{模块：}操作日志\par\smallskip
+\noindent\textbf{布局：}按操作者、时间、对象、动作和结果展示关键记录，敏感资料默认脱敏。
+
+\noindent\textbf{操作：}检索业务记录；处理具体异常时填写必要原因，再查看完整号码并留痕。
+
+\noindent\textbf{规则：}管理员可查全部日志，酒店限本店。完整号码访问须同时具备具体异常和非空原因，越权操作应拒绝并记录。
+
+}
+
+% UI界面16
+\ReportPage
+\phantomsection\pdfbookmark[1]{3.16 本人住宿}{ui-screen-16}
+\subsection*{3.16 本人住宿}
+\begin{center}
+\includegraphics[width=\linewidth,height=130mm,keepaspectratio]{UI/UI来宾本人住宿.png}
+\par\smallskip
+{\fontsize{8.5}{12}\selectfont\color{ReportMuted}图3-16 本人住宿\par}
+\end{center}
+{\fontsize{10.5}{15.5}\selectfont
+\noindent\textbf{角色：}来宾\qquad\textbf{模块：}来宾自助查看\par\smallskip
+\noindent\textbf{布局：}突出本人酒店、地址、住宿日期、房型、状态和脱敏电话等到店信息。
+
+\noindent\textbf{操作：}查看安排、复制酒店地址，需调整或告知晚到时联系负责接待人员。
+
+\noindent\textbf{规则：}来宾不能自行订房，不显示他人安排、学校协议价或管理员处理记录。
+
+}
+
+\ReportPage
+\ReportHeader{大模型使用}
+\section{大模型使用}\label{part:llm}
+
+\phantomsection\pdfbookmark[1]{4.1 UML图}{llm-section-1}
+\subsection*{4.1 UML图}
+在UML设计中，我将实验内容和requirements.md中的需求提供给ChatGPT，让其分析功能与业务流程，选择合适的图形，并生成PlantUML代码。随后通过PlantUML工具渲染组件图、类图、用例图、状态图及两张序列图，采用默认格式。
+
+人工检查是确认UML设计正确性的必要环节。对于生成的代码和图形，我需要对照实验内容和需求说明，逐项人工核对角色权限、对象关系、状态转换条件、交互顺序及异常分支，并检查各张图之间是否一致。发现遗漏、歧义或矛盾后，应明确指出问题，修改PlantUML代码并重新渲染，再次人工复核。大模型生成的内容应作为待审核的初稿，只有经人工检查和修正后才能作为最终设计，不能直接依赖生成结果。
+
+
+\phantomsection\pdfbookmark[1]{4.2 UI界面}{llm-section-2}
+\subsection*{4.2 UI界面}
+在UI设计中，我让ChatGPT依据功能模块和用户角色提供页面布局、导航、配色及字段组织建议，再结合我对界面风格和信息呈现方式的偏好调整方案，辅助完成界面绘制。对于预订确认、改订和停业安置等关键页面，重点核对操作入口、状态与费用提示，使界面内容与需求和UML图保持一致。
+
+本实验使用draw.io（diagrams.net）Desktop绘制界面。它是一款图形化绘图工具，可通过拖拽图形、连接线和文本组织页面，适合制作流程图、UML图和界面原型。设计稿以.drawio格式保存，图形与文字可继续编辑，并可导出PNG、PDF等格式，便于在报告中展示。
+
+
+\phantomsection\pdfbookmark[1]{4.3 实验报告}{llm-section-3}
+\subsection*{4.3 实验报告}
+在报告整理中，我使用ChatGPT，结合已完成的需求说明、UML图和UI设计稿，梳理软件主要功能，组织章节内容并补充图示说明。在此基础上生成LaTeX源文件，编译为PDF，并进一步精简文字、统一标题和图注、调整图片比例与分页，使各页保持A4大小。整理后的内容仍需对照原始材料核查，避免图文不一致或遗漏。
+
+
+\phantomsection\pdfbookmark[1]{4.4 思考与总结}{llm-section-4}
+\subsection*{4.4 思考与总结}
+本次实验表明，性能较强的大模型能够基本胜任需求梳理、图形代码生成、界面建议和报告整理等作业任务，提高完成效率。但模型仍可能误解业务规则，出现关系或状态不一致、代码运行异常及排版不合适等问题，不能因为输出完整就认定其正确。因此，不能过度依赖大模型；生成内容需要人工检查，并结合工具运行结果验证。使用者应理解设计依据，核对需求、UML图、UI界面和报告之间的一致性，最终由人完成判断与质量把关。
+
+
+\label{report:last}
+\end{document}
